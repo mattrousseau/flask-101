@@ -1,7 +1,9 @@
 # pylint: disable=missing-docstring
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, abort
 app = Flask(__name__)
+
+BASE_URL = '/api/v1'
 
 PRODUCTS = {
     1: {
@@ -18,16 +20,15 @@ PRODUCTS = {
     },
 }
 
-
 @app.route('/')
 def hello():
     return "Hi World!"
 
-@app.route('/api/v1/products')
+@app.route(f'{BASE_URL}/products', methods=['GET'])
 def index_products():
     return jsonify(list(PRODUCTS.values()))
 
-@app.route('/api/v1/products/<int:product_id>')
+@app.route(f'{BASE_URL}/products/<int:product_id>', methods=['GET'])
 def show_product(product_id):
     product = PRODUCTS.get(product_id)
 
@@ -35,3 +36,12 @@ def show_product(product_id):
         return "Product not found", 404
 
     return jsonify(product), 200
+
+@app.route(f'{BASE_URL}/products/<int:product_id>', methods=["DELETE"])
+def delete_one_product(product_id):
+    product = PRODUCTS.pop(product_id, None)
+
+    if product is None:
+        abort(404)
+
+    return '', 204
