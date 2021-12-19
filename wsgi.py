@@ -1,6 +1,6 @@
 # pylint: disable=missing-docstring
 
-from flask import Flask, jsonify, abort
+from flask import Flask, jsonify
 app = Flask(__name__)
 
 PRODUCTS = {
@@ -32,7 +32,6 @@ def show_product(product_id):
     product = PRODUCTS.get(product_id)
 
     if product is None:
-        # abort(404)
         return "Product not found", 404
 
     return jsonify(product), 200
