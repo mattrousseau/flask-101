@@ -1,6 +1,8 @@
 # pylint: disable=missing-docstring
+import itertools
 
-from flask import Flask, jsonify, abort
+from flask import Flask, jsonify, abort, request
+
 app = Flask(__name__)
 
 BASE_URL = '/api/v1'
@@ -19,6 +21,9 @@ PRODUCTS = {
         'name': 'Le Wagon'
     },
 }
+
+START_INDEX = len(PRODUCTS) + 1
+IDENTIFIER_GENERATOR = itertools.count(START_INDEX)
 
 @app.route('/')
 def hello():
@@ -45,3 +50,19 @@ def delete_one_product(product_id):
         abort(404)
 
     return '', 204
+
+@app.route(f'{BASE_URL}/products', methods=["POST"])
+def create_one_product():
+    data = request.get_json()
+    name = data.get('name')
+
+    if name is None:
+        abort(400)
+
+    if name == '' or not isinstance(name, str):
+        abort(422)
+
+    next_id = next(IDENTIFIER_GENERATOR)
+    PRODUCTS[next_id] = {'id': next_id, 'name': name}
+
+    return jsonify(PRODUCTS[next_id]), 201
