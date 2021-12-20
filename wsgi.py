@@ -1,7 +1,7 @@
 # pylint: disable=missing-docstring
+import itertools
 
 from flask import Flask, jsonify, abort, request
-import itertools
 
 app = Flask(__name__)
 
