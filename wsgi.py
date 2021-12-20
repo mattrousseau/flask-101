@@ -66,3 +66,27 @@ def create_one_product():
     PRODUCTS[next_id] = {'id': next_id, 'name': name}
 
     return jsonify(PRODUCTS[next_id]), 201
+
+@app.route(f'{BASE_URL}/products/<int:product_id>', methods=["PATCH"])
+def update_one_product(product_id):
+    data = request.get_json()
+
+    if data is None:
+        abort(400)
+
+    name = data.get('name')
+
+    if name is None:
+        abort(400)
+
+    if name == '' or not isinstance(name, str):
+        abort(422)
+
+    product = PRODUCTS.get(product_id)
+
+    if product is None:
+        abort(404)
+
+    PRODUCTS[product_id]["name"] = name
+
+    return '', 204

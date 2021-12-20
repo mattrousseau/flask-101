@@ -65,3 +65,44 @@ class TestViews(TestCase):
         product_2 = response_2.json
         self.assertEqual(response_2.status_code, 422)
         self.assertIsNone(product_2)
+
+    def test_create_product_bad_request(self):
+        response_1 = self.client.post("/api/v1/products", json={'other': 2})
+        product_1 = response_1.json
+        self.assertEqual(response_1.status_code, 400)
+        self.assertIsNone(product_1)
+
+        response_2 = self.client.post("/api/v1/products", json={'other': 'what'})
+        product_2 = response_2.json
+        self.assertEqual(response_2.status_code, 400)
+        self.assertIsNone(product_2)
+
+        response_3 = self.client.post("/api/v1/products")
+        product_3 = response_3.json
+        self.assertEqual(response_3.status_code, 400)
+        self.assertIsNone(product_3)
+
+    def test_update_product_name(self):
+        update_response = self.client.patch("/api/v1/products/1",
+                                            json={'name': 'Workelo'})
+        update_product = update_response.json
+        self.assertEqual(update_response.status_code, 204)
+        self.assertIsNone(update_product)
+
+        response = self.client.get("/api/v1/products/1")
+        product = response.json
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(product, dict)
+        self.assertEqual(product['name'], 'Workelo')
+
+    def test_update_product_bad_request(self):
+        response_1 = self.client.patch("/api/v1/products/1",
+                                       json={'other': 'what'})
+        product_1 = response_1.json
+        self.assertEqual(response_1.status_code, 400)
+        self.assertIsNone(product_1)
+
+        response_2 = self.client.patch("/api/v1/products/1")
+        product_2 = response_2.json
+        self.assertEqual(response_2.status_code, 400)
+        self.assertIsNone(product_2)
